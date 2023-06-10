@@ -1,0 +1,26 @@
+<html>
+    <body onload="getEmployees()">
+        <a href="./login.html">Log out</a>
+
+        
+
+    </body>
+    <script>
+        const url = 'http://localhost:8888/employees'
+
+        const getEmployees = async () => {
+            const accessToken = sessionStorage['accessToken'];
+            const resp = await fetch(url,{
+                method: 'get',
+                headers: { 'x-access-token': accessToken }
+            })
+
+            const data = await resp.json() 
+            console.log(data)
+            
+        }
+
+        
+
+    </script>
+</html>

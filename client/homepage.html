@@ -1,0 +1,36 @@
+<html>
+
+<body onload="getData()">
+    <h1>HomePage</h1>
+    <a href="./login.html">Log out</a>
+    <a href="./employees.html">employees</a>
+    <h2 id="welcom"></h2>
+    <strong id="user"></strong>
+    <script>
+        const url = 'http://localhost:8888/homepage'
+
+        const getData = async () => {
+            const accessToken = sessionStorage['accessToken'];
+
+            const resp = await fetch(url, {
+                method: 'get',
+                headers: { 'x-access-token': accessToken }
+            })
+
+
+            const fullName = await resp.json()
+            if (resp.status != 500) {
+                sessionStorage['fullName'] = fullName;
+                document.getElementById('welcom').innerHTML = "Hello " + fullName;
+            }
+            else
+                console.log(resp.status + " " + fullName);
+
+
+        }
+
+
+    </script>
+</body>
+
+</html>

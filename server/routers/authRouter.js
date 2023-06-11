@@ -10,10 +10,16 @@ const router = express.Router();
 
 //ENTRY POINT:  http://localhost:8888/auth
 
+router.route('/verify').get((req,res)=>{
+    console.log("authrouter empty verfiy get called");
+
+})
+
+
 router.route('/login').post(async (req, res) => {
     const users = await UsersBLL.getAllUsersFromWS();
     const { username, email } = req.body;
-    console.log(req.body);
+    console.log("reqBody" + req.body);
 
     const user = users.find((user) => user.username == username && user.email == email);
 
@@ -29,7 +35,7 @@ router.route('/login').post(async (req, res) => {
             { expiresIn: 7200 } // 2hrs
         )
         
-        res.json({ accessToken });
+        res.json({ accessToken,user });
     }
     else {
        // console.log("auth rouert not exist in WS")

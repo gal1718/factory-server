@@ -8,13 +8,7 @@ const router = express.Router(); //routerclass. express.router create new router
 
 //get All Departments
 router.route('/').get(async (req, res) => {
-    const token = req.headers['x-access-token']
-
-    if (!token) {
-
-        res.status(401).json("No Token Provided");
-    }
-    else {
+ 
         let departments = await DepartmentBLL.getAllDepartments();
         //  departments = departments.map((department) => {
 
@@ -22,18 +16,28 @@ router.route('/').get(async (req, res) => {
         //  })
         //console.log("departments " + departments)
         res.json(departments);
-    }
+    
 });
 
 
 //GetDepartmentById
 router.route('/:id').get(async (req,res) => {
-    const {id} = req.params;
+    try{
+        const {id} = req.params;
+
    // console.log(id)
     const department = await DepartmentBLL.getDepartmentById(id);
     console.log("ddddddd " + department)
     res.json(department ?? 'Wrong ID');
+    }
+
+    catch(err){
+        console.log(err)
+        
+    }
+    
 })
+
 
 //update 
 router.route('/:id').put((req,res) => {

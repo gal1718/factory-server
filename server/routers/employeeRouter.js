@@ -7,17 +7,11 @@ const router = express.Router(); //routerclass. express.router create new router
 
 //get All employess
 router.route('/').get(async (req, res) => {
-    const token = req.headers['x-access-token']
-
-    if (!token) {
-
-        res.status(401).json("No Token Provided");
-    }
-    else {
+  
         const employees = await employeeBLL.getAllEmployees();
         //console.log(employees)
         res.json(employees);
-    }
+    
 });
 
 //GetEmployeeById
@@ -33,6 +27,7 @@ router.route('/:id').get(async (req,res) => {
 router.route('/:id').put((req,res) => {
     const {id} = req.params;
     const updatedEmp = req.body;
+    console.log("updatedEmp " + updatedEmp);
     const newEmployees = employeeBLL.updateEmployee(id,updatedEmp);
     res.json(newEmployees);
     

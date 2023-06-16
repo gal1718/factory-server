@@ -21,22 +21,25 @@ connectDB();
 //Middlewares
 app.use(cors());
 
-app.use(function (req, res, next) {
-    // Put some preprocessing here.
-    const token = req.headers['x-access-token']
-    console.log("token " + token)
 
-    if (req.url === '/auth/login') {
-        console.log("req.url === '/auth/login")
-        return next()
-    }
-    if (!token) {
+    app.use(function (req, res, next) {
+        // Put some preprocessing here.
+        // console.log("request: " + req)
 
-        console.log("no token")
-        return res.status(401).json("No Token Provided");
+        const token = req.headers['x-access-token']
+        console.log("token " + token)
 
-    }
-    else {
+        if (req.url === '/auth/login') {
+            console.log("req.url === '/auth/login")
+            return next()
+        }
+        if (!token) {
+
+            console.log("no token")
+            return res.status(401).json("No Token Provided");
+
+        }
+        else {
 
             jwt.verify(token, ACCESS_SECRET_TOKEN, async (err, data) => {
                 console.log("main jwt verifing")
@@ -46,13 +49,14 @@ app.use(function (req, res, next) {
                     return res.status(500).json('Failed to authenticate token')
                 }
             })
-    
-        
-    }
 
-    return next();
+        }
 
-});
+        return next();
+
+    });
+
+
 
 app.use('/', express.json());
 

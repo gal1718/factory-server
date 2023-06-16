@@ -8,17 +8,40 @@ async function getAllEmployees() {
 };
 
 //GetByID
-const getEmployeeById =  (id) => {
-    return  Employee.find({ _id: id }).populate('department').populate('shifts').exec();;
-    
+const getEmployeeById = (id) => {
+    return Employee.find({ _id: id }).populate('department').populate('shifts').exec();;
+
 }
 
 
 
 const updateEmployee = async (id, updatedEmp) => {
     const { modifiedCount } = await Employee.updateOne({ _id: id }, updatedEmp);
-   // console.log(modifiedCount);
+    // console.log(modifiedCount);
 }
+
+
+
+const updateManyEmployees = (updateEmployees) =>{
+    console.log("updateEmployees: " + updateEmployees);
+    updateEmployees.map( async (emp) =>{
+       // updateEmployee(emp._id,emp)
+        const { modifiedCount } = await Employee.updateOne({ _id: emp._id }, emp);
+    })
+    return modifiedCount;
+
+    // const updateData = updateEmployees.map(({ _id, ...updateFields }) => ({
+    //     updateOne: {
+    //       filter: { _id: _id },
+    //       update: updateFields,
+    //     },
+    //   }));
+  
+    //   await Employee.bulkWrite(updateData);
+  
+      //res.json({ message: 'Employees updated successfully' });
+
+} 
 
 const deleteEmployee = (id) => {
     return Employee.findOneAndDelete({ _id: id })
@@ -27,9 +50,9 @@ const deleteEmployee = (id) => {
 
 //Post - Create
 const addEmployee = async (newEmp) => {
-    //console.log("obj : " + obj);
+    console.log("obj : " + newEmp);
     var id = new mongoose.Types.ObjectId();
-    const newEmpWithId = {...newEmp, _id: id}
+    const newEmpWithId = { ...newEmp, _id: id }
     const newEmployee = new Employee(newEmpWithId);
     await newEmployee.save();
     return "Employee created";
@@ -38,4 +61,4 @@ const addEmployee = async (newEmp) => {
 
 
 
-module.exports = { getAllEmployees,getEmployeeById, updateEmployee, deleteEmployee, addEmployee }
+module.exports = { getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, addEmployee, updateManyEmployees }

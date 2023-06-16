@@ -11,11 +11,8 @@ const departmentSchema = mongoose.Schema(
             required: true
         
         },
-        name: String,
-        employees: [{ type: Schema.Types.ObjectId, ref: 'employee'}],
+        name: String
        
-     
-        
         
     }
 )

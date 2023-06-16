@@ -2,13 +2,13 @@ const Department = require('../model/departmentModel');
 
 
 function getAllDepartments() {
-    return Department.find().populate('manager').populate('employees').exec();
+    return Department.find().populate('manager').exec();
  
 };
 
 //GetByID
 const getDepartmentById =  (id) => {
-    return  Department.find({ _id: id }).populate('manager').populate('employees').exec();;
+    return  Department.find({ _id: id }).populate('manager').exec();;
     
 }
 

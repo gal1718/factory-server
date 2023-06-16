@@ -1,12 +1,9 @@
-const usersWS = require('../DAL/usersWS');
+const usersWS = require('../DAL/usersWS')
 const User = require('../model/userModel')
 
 
-const getAllUsersFromWS = async () => {
-    const { data: users } = await usersWS.getAllUsers();
-    return users;
-
-};
+const getAllUsersFromWS = () =>
+    usersWS.getAllUsers();
 
 const getAllUsersfromDB = async () => {
     return await User.find();

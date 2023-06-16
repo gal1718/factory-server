@@ -7,6 +7,7 @@ const ACCESS_SECRET_TOKEN = "1234"
 
 
 const router = express.Router();
+console.log("authrouter");
 
 //ENTRY POINT:  http://localhost:8888/auth
 
@@ -16,8 +17,11 @@ router.route('/verify').get((req,res)=>{
 })
 
 
+
 router.route('/login').post(async (req, res) => {
-    const users = await UsersBLL.getAllUsersFromWS();
+    console.log("11111")
+    const {data: users} = await UsersBLL.getAllUsersFromWS();
+    console.log("users 2222 " + users);
     const { username, email } = req.body;
     console.log("reqBody" + req.body);
 

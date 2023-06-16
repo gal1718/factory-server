@@ -27,7 +27,7 @@ router.route('/:id').get(async (req,res) => {
 
    // console.log(id)
     const department = await DepartmentBLL.getDepartmentById(id);
-    console.log("ddddddd " + department)
+    //console.log("ddddddd " + department)
     res.json(department ?? 'Wrong ID');
     }
 

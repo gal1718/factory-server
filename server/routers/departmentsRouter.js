@@ -49,6 +49,15 @@ router.route('/:id').put((req,res) => {
 })
 
 
+//Add a department
+router.route('/').post( async (req,res) =>{
+    const newDep = req.body;
+    const result = await DepartmentBLL.addDepartmernt(newDep);
+    res.json(result);
+  
+})
+
+
 
 
 

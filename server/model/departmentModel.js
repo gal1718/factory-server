@@ -7,8 +7,7 @@ const departmentSchema = mongoose.Schema(
         _id: Schema.Types.ObjectId,
         manager: { 
             type: Schema.Types.ObjectId, 
-            ref: "employee",
-            required: true
+            ref: "employee"
         
         },
         name: String

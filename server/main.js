@@ -66,6 +66,7 @@ app.use('/auth', authRouter)
 app.use('/employees', EmployeesRouter);//direct to relevant router. request / - the entry point. cars - the rest of the req - for this type of req direct to cars router 
 app.use('/departments', DepartmentsRouter);
 app.use('/shifts', ShiftsRouter);
+app.use('/users', authRouter);
 
 
 

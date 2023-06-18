@@ -1,4 +1,5 @@
 const Department = require('../model/departmentModel');
+const mongoose = require('mongoose');
 
 
 function getAllDepartments() {
@@ -17,5 +18,19 @@ const updateDepartment = async (id, updatedDep) => {
    // console.log(modifiedCount);
 }
 
+//Post - Create
+const addDepartmernt = async (newDep) => {
+    console.log("obj : " + JSON.stringify(newDep) + " END");
 
-module.exports = {getAllDepartments, getDepartmentById, updateDepartment}
+    var id = new mongoose.Types.ObjectId();
+    const newDepWithId = { ...newDep, _id: id }
+
+    const newDepartment = new Department(newDepWithId);
+    await newDepartment.save();
+    return "Department created";
+
+
+}
+
+
+module.exports = {getAllDepartments, getDepartmentById, updateDepartment, addDepartmernt}

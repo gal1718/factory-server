@@ -45,9 +45,17 @@ router.route('/login').post(async (req, res) => {
        // console.log("auth rouert not exist in WS")
         res.json("User not found")
     }
-
-
 })
+
+//get All employess
+router.route('/').get(async (req, res) => {
+    
+    
+    const users = await UsersBLL.getAllUsersfromDB();
+    // console.log(shifts)
+    res.json(users);
+
+});
 
 
 

@@ -8,9 +8,19 @@ const router = express.Router(); //routerclass. express.router create new router
 //get All employess
 router.route('/').get(async (req, res) => {
   
+
+
         const employees = await employeeBLL.getAllEmployees();
-        //console.log(employees)
-        res.json(employees);  
+        const modifiedEmployees = employees.map((employee) => {
+            // Check if the department field is empty or null
+            if (!employee.department) {
+              // Set the department field to an empty string
+              return { ...employee.toObject() , department: '' };
+            }
+            return employee;
+          });
+        console.log("new employees " + JSON.stringify(employees))
+        res.json(modifiedEmployees);  
         
 });
 
@@ -27,7 +37,7 @@ router.route('/:id').get(async (req,res) => {
 router.route('/:id').put((req,res) => {
     const {id} = req.params;
     const updatedEmp = req.body;
-    console.log("updatedEmp " + updatedEmp + " id: " + id );
+   // console.log("updatedEmp " + updatedEmp + " id: " + id );
     const newEmployees = employeeBLL.updateEmployee(id,updatedEmp);
     res.json(newEmployees);
     
@@ -35,13 +45,21 @@ router.route('/:id').put((req,res) => {
 
 
 // update many employees
-router.put('/', (req, res) => {
+router.put('/', async (req, res) => {
         
         console.log("reached tro router")
         const employees = req.body;
         console.log("emp to update from request: " + JSON.stringify(employees))
-        const data = employeeBLL.updateManyEmployees(employees)
-        console.log("data is: " + data)
+        //change null department to undifined
+        const newEmployees = employees.map((emp) =>{
+            if(emp.department == null || !emp.department){
+                emp.department = '';
+            }
+            return emp
+        })
+        //console.log("emp to update from request after change: " + JSON.stringify(newEmployees))
+        const data = await employeeBLL.updateManyEmployees(newEmployees)
+       // console.log("data is: " + data)
         res.json(data);
     
   });
@@ -61,6 +79,7 @@ router.route('/').post( async (req,res) =>{
     res.json(result);
   
 })
+
 
 module.exports = router;
 

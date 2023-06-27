@@ -1,60 +1,67 @@
 const Employee = require('../model/employeeModel');
 const Department = require('../model/departmentModel');
 const mongoose = require('mongoose');
-const employeeModel = require('../model/employeeModel');
+
 
 
 async function getAllEmployees() {
-    return await Employee.find().populate('department').populate('shifts').exec();
-
-};
-
-//GetByID
-const getEmployeeById = (id) => {
-    return Employee.find({ _id: id }).populate('department').populate('shifts').exec();;
-
+    try {
+        return await Employee.find().populate('department').populate('shifts').exec();
+    } catch (error) {
+        console.error("Error getting all employees:", error);
+        throw error;
+    }
 }
+
+
+
+const getEmployeeById = async (id) => {
+    try {
+        return await Employee.find({ _id: id }).populate('department').populate('shifts').exec();
+    } catch (error) {
+        console.error("Error getting employee by ID:", error);
+        throw error;
+    }
+};
 
 
 
 const updateEmployee = async (id, updatedEmp) => {
-    const { modifiedCount } = await Employee.updateOne({ _id: id }, updatedEmp);
-    console.log(modifiedCount);
-}
-
+    try {
+        const { modifiedCount } = await Employee.updateOne({ _id: id }, updatedEmp);// modifiedCount indicates how many documents matched the specified filter criteria and were successfully updated with the provided update data.
+    } catch (error) {
+        console.error("Error updating employee:", error);
+        throw error;
+    }
+};
 
 
 
 const updateManyEmployees = async (updateEmployees) => {
-    console.log("updateEmployees: " + JSON.stringify(updateEmployees));
+    try {
 
+        const updatePromises = updateEmployees.map(async (emp) => {
+            if (emp.department === "") {
+                emp.department = null;
+            }
+            return Employee.updateOne({ _id: emp._id }, emp);
+        });
 
-    const updatePromises = updateEmployees.map(async (emp) => {
-        if (emp.department === "") {
-            emp.department = null;
-        }
-        return Employee.updateOne({ _id: emp._id }, emp);
-    });
+        await Promise.all(updatePromises);
 
-    await Promise.all(updatePromises);
-
-    return getAllEmployees();
-
-}
-
+        return getAllEmployees();
+    } catch (error) {
+        console.error("Error updating many employees:", error);
+        throw error;
+    }
+};
 
 
 
 const deleteEmployee = async (id) => {
-    // return Employee.findOneAndDelete({ _id: id })
-
-    //need to delete also managers in departmetns
     try {
+        const departments = await Department.find({ manager: id });//delete employee from departments manager field ( if exist )
 
-
-        const departments = await Department.find({ manager: id });
-
-        // Delete the manager reference in each department
         await Promise.all(
             departments.map(async (department) => {
                 await Department.findByIdAndUpdate(
@@ -69,31 +76,37 @@ const deleteEmployee = async (id) => {
         if (!employee) {
             return "Employee not found";
         }
+
         return employee;
-
     } catch (error) {
-        console.error(error);
-        return "Error deleting employee";
+        console.error("Error deleting employee:", error);
+        throw error;
     }
+};
 
 
-}
 
-
-//Post - Create
 const addEmployee = async (newEmp) => {
-    console.log("obj : " + JSON.stringify(newEmp) + " END");
+    try {
+        const id = new mongoose.Types.ObjectId();
+        const newEmpWithId = { ...newEmp, _id: id };
 
-    var id = new mongoose.Types.ObjectId();
-    const newEmpWithId = { ...newEmp, _id: id }
-
-    const newEmployee = new Employee(newEmpWithId);
-    await newEmployee.save();
-    return "Employee created";
-
-
-}
-
+        const newEmployee = new Employee(newEmpWithId);
+        await newEmployee.save();
+        return "Employee created";
+    } catch (error) {
+        console.error("Error adding employee:", error);
+        throw error;
+    }
+};
 
 
-module.exports = { getAllEmployees, getEmployeeById, updateEmployee, deleteEmployee, addEmployee, updateManyEmployees }
+
+module.exports = {
+    getAllEmployees,
+    getEmployeeById,
+    updateEmployee,
+    deleteEmployee,
+    addEmployee,
+    updateManyEmployees
+};

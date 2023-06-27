@@ -2,35 +2,71 @@ const Department = require('../model/departmentModel');
 const mongoose = require('mongoose');
 
 
+
 function getAllDepartments() {
-    return Department.find().populate('manager').exec();
- 
+    try {
+        return Department.find().populate('manager').exec();
+    } catch (error) {
+        console.error("Error getting all departments:", error);
+        throw error;
+    }
+}
+
+
+const getDepartmentById = async (id) => {
+    try {
+        return Department.find({ _id: id }).populate('manager').exec();
+    } catch (error) {
+        console.error("Error getting department by ID:", error);
+        throw error;
+    }
 };
 
-//GetByID
-const getDepartmentById =  (id) => {
-    return  Department.find({ _id: id }).populate('manager').exec();;
-    
-}
 
 const updateDepartment = async (id, updatedDep) => {
-    const { modifiedCount } = await Department.updateOne({ _id: id }, updatedDep);
-   // console.log(modifiedCount);
-}
+    try {
+        const { modifiedCount } = await Department.updateOne({ _id: id }, updatedDep);
+        // console.log(modifiedCount);
+    } catch (error) {
+        console.error("Error updating department:", error);
+        throw error;
+    }
+};
 
-//Post - Create
+
+
 const addDepartmernt = async (newDep) => {
-    console.log("obj : " + JSON.stringify(newDep) + " END");
+    try {
+        console.log("obj: " + JSON.stringify(newDep) + " END");
 
-    var id = new mongoose.Types.ObjectId();
-    const newDepWithId = { ...newDep, _id: id }
+        const id = new mongoose.Types.ObjectId();
+        const newDepWithId = { ...newDep, _id: id };
 
-    const newDepartment = new Department(newDepWithId);
-    await newDepartment.save();
-    return "Department created";
+        const newDepartment = new Department(newDepWithId);
+        await newDepartment.save();
 
-
-}
-
-
-module.exports = {getAllDepartments, getDepartmentById, updateDepartment, addDepartmernt}
+        return "Department created";
+    } catch (error) {
+        console.error("Error adding department:", error);
+        throw error;
+    }
+};
+const deleteDepartment = async (id) => {
+    try {
+        const department = await Department.findOneAndDelete({ _id: id });
+        if (!department) {
+            return "Employee not found";
+        }
+        return department;
+    } catch (error) {
+        console.error("Error deleting employee:", error);
+        throw error;
+    }
+};
+module.exports = {
+    getAllDepartments,
+    getDepartmentById,
+    updateDepartment,
+    addDepartmernt,
+    deleteDepartment
+};

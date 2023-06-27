@@ -1,62 +1,114 @@
-const express = require('express')
-const UsersBLL = require('../BLL/usersBLL')
+const express = require('express');
+const UsersBLL = require('../BLL/usersBLL');
 const jwt = require('jsonwebtoken');
-//import { ACCESS_SECRET_TOKEN } from '../constans'
 
-const ACCESS_SECRET_TOKEN = "1234"
-
+const ACCESS_SECRET_TOKEN = "1234";
 
 const router = express.Router();
-console.log("authrouter");
-
-//ENTRY POINT:  http://localhost:8888/auth
-
-router.route('/verify').get((req,res)=>{
-    console.log("authrouter empty verfiy get called");
-
-})
 
 
 
-router.route('/login').post(async (req, res) => {
-    console.log("11111")
-    const {data: users} = await UsersBLL.getAllUsersFromWS();
-    console.log("users 2222 " + users);
-    const { username, email } = req.body;
-    console.log("reqBody" + req.body);
-
-    const user = users.find((user) => user.username == username && user.email == email);
-
-    //User exists - create token
-    if (user) {
-        console.log("auth router exist in WS")
-        const userExternalId = user.id;//uses as the ID - payload 
-
-
-        const accessToken = jwt.sign(
-            { id: userExternalId },
-            ACCESS_SECRET_TOKEN,
-            { expiresIn: 7200 } // 2hrs
-        )
-        
-        res.json({ accessToken,user });
+router.route('/verify').get((req, res) => {
+    try {
+        console.log("authrouter empty verify get called");
+        // Add your verification logic here
+    } catch (error) {
+        console.error("Error verifying token:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-    else {
-       // console.log("auth rouert not exist in WS")
-        res.json("User not found")
+});
+
+
+router.route('/login').post(async (req, res) => { // Login send post request . assigning to JWT (in server)//returns the access token and the user's data 
+    try {
+        const { data: users } = await UsersBLL.getAllUsersFromWS();//why await? 
+        const { username, email } = req.body;
+
+
+        let user = users.find((user) => user.username == username && user.email == email);
+
+        if (user) {
+            const userFromDB = await UsersBLL.getUser(user.id);
+
+            user = {
+                id: user.id,
+                name: user.name,
+                username: user.username,
+                email: user.email,
+                numOfActions: userFromDB.numOfActions,
+                _id: userFromDB._id,
+                fullName: userFromDB.fullName,
+                externalId: userFromDB.externalId
+            }
+            const userExternalId = user.id;
+
+            const accessToken = jwt.sign(
+                { id: userExternalId },
+                ACCESS_SECRET_TOKEN,
+                { expiresIn: 7200 } // 2hrs
+            );
+
+            res.json({ accessToken, user });
+        } else {
+            res.json("User not found");
+        }
+    } catch (error) {
+        console.error("Error logging in:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
-})
-
-//get All employess
-router.route('/').get(async (req, res) => {
-    
-    
-    const users = await UsersBLL.getAllUsersfromDB();
-    // console.log(shifts)
-    res.json(users);
-
 });
 
 
 
-module.exports = router
+router.route('/').get(async (req, res) => {
+    try {
+        const users = await UsersBLL.getAllUsersfromDB();
+        res.json(users);
+    } catch (error) {
+        console.error("Error getting all users:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+
+router.route('/getActions/:externalId').get(async (req, res) => {
+    try {
+        const { externalId } = req.params;
+        const userActions = await UsersBLL.getUsersActionsfromDB(externalId);
+        if (userActions)
+            res.json(userActions);
+        else
+            res.json("No actions");
+    } catch (error) {
+        console.error("Error getting user actions:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+router.route('/createActions').post(async (req, res) => {
+    try {
+        const actions = req.body;
+        const result = await UsersBLL.addActions(actions);
+        res.json(result);
+    } catch (error) {
+        console.error("Error creating user actions:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+module.exports = router;

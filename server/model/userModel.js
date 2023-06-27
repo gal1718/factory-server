@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     _id: Schema.Types.ObjectId,
     externalId: Number,
     fullName: String,
-    NumOfActions: Number
+    numOfActions: Number
   },
   { id: false },
   { versionKey: false },

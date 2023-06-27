@@ -22,39 +22,35 @@ connectDB();
 app.use(cors());
 
 
-    app.use(function (req, res, next) {
-        // Put some preprocessing here.
-        // console.log("request: " + req)
+app.use(function (req, res, next) {
 
-        const token = req.headers['x-access-token']
-        console.log("token " + token)
+    const token = req.headers['x-access-token']
+    console.log("token " + token)
 
-        if (req.url === '/auth/login') {
-            console.log("req.url === '/auth/login")
-            return next()
-        }
-        if (!token) {
+    if (req.url === '/auth/login') {
+        console.log("req.url === '/auth/login")
+        return next()
+    }
+    if (!token) {
 
-            console.log("no token")
-            return res.status(401).json("No Token Provided");
+        console.log("no token")
+        return res.status(401).json("No Token Provided");
 
-        }
-        else {
+    }
+    else {
 
-            jwt.verify(token, ACCESS_SECRET_TOKEN, async (err, data) => {
-                console.log("main jwt verifing")
-                if (err) {
-                    console.log("not verifed err token: " + token);
+        jwt.verify(token, ACCESS_SECRET_TOKEN, async (err, data) => {
+            console.log("main jwt verifing")
+            if (err) {
+                console.log("not verifed err token: " + token);
 
-                    return res.status(500).json('Failed to authenticate token')
-                }
-            })
+                return res.status(500).json('Failed to authenticate token')
+            }
+        })
+    }
+    return next();
 
-        }
-
-        return next();
-
-    });
+});
 
 
 
@@ -63,16 +59,17 @@ app.use('/', express.json());
 //routers
 app.use('/', authRouter)
 app.use('/auth', authRouter)
+app.use('/users', authRouter);
+app.use('/actions', authRouter);
 app.use('/employees', EmployeesRouter);//direct to relevant router. request / - the entry point. cars - the rest of the req - for this type of req direct to cars router 
 app.use('/departments', DepartmentsRouter);
 app.use('/shifts', ShiftsRouter);
-app.use('/users', authRouter);
+
 
 
 
 app.listen(port, () => {
     console.log(`app is listening at http://localhost:${port}`)
-
 })
 
 
